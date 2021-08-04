@@ -1,6 +1,7 @@
 ---
 parameters:
-
+  - name: customerName
+    type: string
 variables:
 - template: Vars/sandbox.yml
 - name: tfDirectory

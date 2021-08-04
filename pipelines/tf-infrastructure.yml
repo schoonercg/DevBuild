@@ -1,12 +1,10 @@
 ---
 parameters:
-  - name: customerName
-    type: string
 
 variables:
 - template: Vars/sandbox.yml
 - name: tfDirectory
-  value: '$(Pipeline.Workspace)/s/Terraform/SaaS Customer Infrastructure/'
+  value: '$(Pipeline.Workspace)/s/Terraform/dev/'
 - name: tfstateKeyName
   value: '$(customerName).tfstate'
 
@@ -35,14 +33,8 @@ stages:
         inputs:
           SourceFolder: $(tfDirectory)
           Contents: |
-            customers/**
-            alerts.tf
-            keyvault.tf
-            loganalytics.tf
             main.tf
             variables.tf
-            vm-withdisks.tf
-            budget-alert.tf
           TargetFolder: '$(Build.ArtifactStagingDirectory)/package'
           CleanTargetFolder: true
       - task: PublishPipelineArtifact@1

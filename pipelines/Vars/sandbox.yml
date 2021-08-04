@@ -3,6 +3,6 @@ variables:
   tfVersion: '1.0.3'
   tfDirectory: '$(Pipeline.Workspace)/s/terraform/dev/'
   tfstateResourceGroupName: 'tfstate'
-  tfstateStorageAccountName: 'tfstate31829'
+  tfstateStorageAccountName: 'tfstate31830'
   tfstateContainerName: 'tfstate'
   tfstateKeyName: 'ncr.tfstate'

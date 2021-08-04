@@ -1,8 +1,8 @@
 variables:
   serviceConnection: 'NCR'
-  tfVersion: '1.0.2'
+  tfVersion: '1.0.3'
   tfDirectory: '$(Pipeline.Workspace)/s/Terraform/dev/'
   tfstateResourceGroupName: 'tfstate'
   tfstateStorageAccountName: 'tfstate31829'
   tfstateContainerName: 'tfstate'
-  tfstateKeyName: 'acr.tfstate'
+  tfstateKeyName: 'ncr.tfstate'

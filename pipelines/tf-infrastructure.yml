@@ -5,7 +5,7 @@ parameters:
 variables:
 - template: Vars/sandbox.yml
 - name: tfDirectory
-  value: '$(Pipeline.Workspace)/s/Terraform/dev/'
+  value: '$(Pipeline.Workspace)/s/terraform/dev/'
 - name: tfstateKeyName
   value: '$(customerName).tfstate'
 

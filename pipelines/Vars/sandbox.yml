@@ -1,7 +1,7 @@
 variables:
-  serviceConnection: 'SANDBOX-ServiceConnection'
-  tfVersion: '0.15.4'
-  tfDirectory: '$(Pipeline.Workspace)/s/Terraform/Azure Container Registry/'
+  serviceConnection: 'NCR'
+  tfVersion: '1.0.2'
+  tfDirectory: '$(Pipeline.Workspace)/s/Terraform/dev/'
   tfstateResourceGroupName: 'tfstate'
   tfstateStorageAccountName: 'tfstate31829'
   tfstateContainerName: 'tfstate'

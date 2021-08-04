@@ -1,0 +1,67 @@
+---
+
+jobs:
+- job: TerraformPlan
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+    - task: AzureCLI@2
+      displayName: 'Terraform Backend Storage'
+      inputs:
+        azureSubscription: 'SANDBOX-ServiceConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          #!/bin/bash
+          
+          RESOURCE_GROUP_NAME=tfstate
+          STORAGE_ACCOUNT_NAME=tfstate31829
+          CONTAINER_NAME=tfstate
+
+          az group create --name $RESOURCE_GROUP_NAME --location eastus
+          az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+          az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
+
+          echo "resource_group: ##vso[task.setvariable variable=storageResoureGroup]$RESOURCE_GROUP_NAME"
+          echo "storage_account_name: ##vso[task.setvariable variable=storageAccountName]$STORAGE_ACCOUNT_NAME"
+          echo "container_name: ##vso[task.setvariable variable=storageAccountContainerName]$CONTAINER_NAME"
+    - task: TerraformTaskV1@0
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(Agent.TempDirectory)/Working'
+        backendServiceArm: 'SANDBOX-ServiceConnection'
+        backendAzureRmResourceGroupName: 'tfstate'
+        backendAzureRmStorageAccountName: 'tfstate31829'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'terraform.tfstate'
+    - task: TerraformTaskV1@0
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(Pipeline.Workspace)/s/TerraformSaaS/tftemplates/'
+        commandOptions: '-var-file ./customers/${{ parameters.customerName }}.tfvars -out "tf.plan"'
+        environmentServiceNameAzureRM: 'SANDBOX-ServiceConnection'
+    - task: CopyFiles@2
+      displayName: 'Copy Terraform Files to Artifact Staging'
+      inputs:
+        SourceFolder: '$(Pipeline.Workspace)/s/TerraformSaaS/tftemplates/'
+        Contents: |
+          customers/**
+          alerts.tf
+          keyvault.tf
+          loganalytics.tf
+          main.tf
+          variables.tf
+          vm-withdisks.tf
+          budget-alert.tf
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/package'
+        CleanTargetFolder: true
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Artifact'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/package'
+        artifact: 'Terraform Plan'
+        publishLocation: 'pipeline'

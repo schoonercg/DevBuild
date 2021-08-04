@@ -1,0 +1,101 @@
+---
+parameters:
+  - name: customerName
+    type: string
+
+variables:
+- template: Vars/sandbox.yml
+- name: tfDirectory
+  value: '$(Pipeline.Workspace)/s/Terraform/SaaS Customer Infrastructure/'
+- name: tfstateKeyName
+  value: '$(customerName).tfstate'
+
+trigger:
+- main
+
+stages:
+  - stage: Build
+    jobs:
+    - job: Initialize_Terraform
+      displayName: 'Build Terraform Plan'
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - template: Templates/terraform-init.yml
+      - task: TerraformTaskV1@0
+        displayName: 'Terraform Plan'
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(tfDirectory)
+          commandOptions: '-out "tf.plan"'
+          environmentServiceNameAzureRM: $(serviceConnection)
+      - task: CopyFiles@2
+        displayName: 'Copy Terraform Files to Artifact Staging'
+        inputs:
+          SourceFolder: $(tfDirectory)
+          Contents: |
+            customers/**
+            alerts.tf
+            keyvault.tf
+            loganalytics.tf
+            main.tf
+            variables.tf
+            vm-withdisks.tf
+            budget-alert.tf
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/package'
+          CleanTargetFolder: true
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish Terraform Artifact'
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/package'
+          artifact: 'Terraform Plan'
+          publishLocation: 'pipeline'
+
+  - stage: Approval
+    dependsOn: Build
+    condition: succeeded('Build')
+    jobs:
+    - job: Manual_Approval_Gate
+      pool: server
+      steps:
+      - task: ManualValidation@0
+        inputs:
+          notifyUsers: |
+            christian.presley@microsoft.com
+          instructions: 'Please review the pending deployment and provide approval as necessary.'
+          onTimeout: 'reject'
+
+  - stage: Release
+    variables:
+      tfDirectory: '$(Agent.TempDirectory)/Working'
+    dependsOn: Approval
+    condition: succeeded('Approval')
+    jobs:
+    - job: Apply_Terraform_Plan
+      displayName: 'Release Terraform Plan'
+      pool: 
+        vmImage: ubuntu-latest
+      steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          buildType: 'current'
+          artifactName: 'Terraform Plan'
+          targetPath: $(tfDirectory)
+      - template: Templates/terraform-init.yml
+      - task: TerraformTaskV1@0
+        displayName: 'Terraform Plan'
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(tfDirectory)
+          commandOptions: '-out "tf.plan"'
+          environmentServiceNameAzureRM: $(serviceConnection)
+      - task: TerraformTaskV1@0
+        displayName: 'Terraform Apply'
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(tfDirectory)
+          commandOptions: '"tf.plan"'
+          environmentServiceNameAzureRM: $(serviceConnection)

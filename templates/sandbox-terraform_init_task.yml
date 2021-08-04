@@ -1,0 +1,12 @@
+steps:
+- task: TerraformTaskV1@0
+  displayName: 'Terraform Init'
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: '$(Agent.TempDirectory)/Working'
+    backendServiceArm: 'SANDBOX-ServiceConnection'
+    backendAzureRmResourceGroupName: 'tfstate'
+    backendAzureRmStorageAccountName: 'tfstate31829'
+    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmKey: 'terraform.tfstate'

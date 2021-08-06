@@ -2,12 +2,14 @@
 parameters:
   - name: customerName
     type: string
+  - name: env
+    type: string
 variables:
-- template: Vars/sandbox.yml
+- template: Vars/${{parameters.env}}.yml
 - name: tfDirectory
   value: '$(Pipeline.Workspace)/s/terraform/dev/'
 - name: tfstateKeyName
-  value: '$(customerName).tfstate'
+  value: '${{parameters.customerName}}.tfstate'
 
 trigger:
 - main
@@ -55,7 +57,7 @@ stages:
       - task: ManualValidation@0
         inputs:
           notifyUsers: |
-            christian.presley@microsoft.com
+            daniel.garza@microsoft.com
           instructions: 'Please review the pending deployment and provide approval as necessary.'
           onTimeout: 'reject'
 

@@ -1,0 +1,6 @@
+variables:
+  environment_name: "prod"
+  environmentServiceName: "ITS-APPOPS-ADLE-PROD-PLTBLD-SP-Connection"
+  backendAzureRmResourceGroupName: "ITS-APPOPS-ADLE-PROD-EUA02-STATE-RG"
+  backendAzureRmStorageAccountName: "adleprodstatestorage"
+  backendAzureRmContainerName: "adleprodstatestorage-tf"

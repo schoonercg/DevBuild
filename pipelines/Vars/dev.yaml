@@ -1,0 +1,6 @@
+variables:
+  environment_name: "dev"
+  environmentServiceName: "ITS-APPOPS-ADLE-PREP-PLTBLD-SP-Connection"
+  backendAzureRmResourceGroupName: "ITS-APPOPS-ADLE-DEV-EUA02-STATE-RG"
+  backendAzureRmStorageAccountName: "adledevstatestorage"
+  backendAzureRmContainerName: "adledevstatestorage-tf"

@@ -1,0 +1,13 @@
+variables:
+  isMain:              ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
+  isProduction:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/production') }}
+  isTag:               ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
+  isFork:              ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
+  isPR:                ${{ eq(variables['Build.Reason'], 'PullRequest') }}
+  isTrustedCode:       ${{ eq(variables.isFork, 'False') }}
+  isScheduled:         ${{ eq(variables['Build.Reason'], 'Schedule') }}
+  isTrustedCI:         ${{ and( eq(variables.isFork,'False'), eq(variables.isPR,'False'), eq(variables.isScheduled,'False') ) }}
+  download_tfdir:      'download_tfdir'
+  tf_module_git_ref:   ${{ parameters.tf_module_git_ref }}
+  github_sc:           'ncr-it-cio' # Github Service Connection Type, using azure pipelines app
+  tenant_id:           'ae4df1f7-611e-444f-897e-f964e1205171'

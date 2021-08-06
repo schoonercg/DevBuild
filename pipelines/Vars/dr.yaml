@@ -1,0 +1,6 @@
+variables:
+  environment_name: "dr"
+  environmentServiceName: "ITS-APPOPS-ADLE-PROD-PLTBLD-SP-Connection" #Need verfication
+  backendAzureRmResourceGroupName: "ITS-APPOPS-ADLE-DR-CUA01-STATE-RG"
+  backendAzureRmStorageAccountName: "adledrstatestorage"
+  backendAzureRmContainerName: "adledrstatestorage-tf"

@@ -1,0 +1,6 @@
+variables:
+  environment_name: "poc"
+  environmentServiceName: "ITS-APPOPS-EDL-EUA02-POC-PLTBLD-SP-Connection"
+  backendAzureRmResourceGroupName: "ITS-APPOPS-EDL-POC-EUA02-STATE-RG"
+  backendAzureRmStorageAccountName: "adlepocstatestorage"
+  backendAzureRmContainerName: "adlepocstatestorage-tf"
